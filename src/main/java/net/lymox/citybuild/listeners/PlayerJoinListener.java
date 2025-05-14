@@ -1,6 +1,8 @@
 package net.lymox.citybuild.listeners;
 
+import net.lymox.citybuild.manager.ScoreboardManger;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
+import net.lymox.citybuild.utils.Userdata;
 import net.lymox.core.master.objects.player.LymoxPlayer;
 import net.lymox.core.spigot.plugin.CoreSpigotPlugin;
 import org.bukkit.Location;
@@ -36,9 +38,12 @@ public class PlayerJoinListener implements Listener {
                     player.getInventory().addItem(new ItemStack(Material.STONE_SHOVEL));
                     player.getInventory().addItem(new ItemStack(Material.OAK_LOG, 16));
                     player.getInventory().addItem(new ItemStack(Material.BREAD, 32));
+                    new Userdata(player.getUniqueId()).setMünzen(500);
                 }
             }
         }.runTaskLater(CitybuildPlugin.getInstance(), 5);
+
+        CitybuildPlugin.getInstance().getManagers().getScoreboardManager().setDefaultScore(player);
     }
 
 

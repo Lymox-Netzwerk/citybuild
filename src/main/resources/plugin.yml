@@ -1,0 +1,9 @@
+name: Lymox_Citybuild
+version: 1.0
+api-version: 1.21
+main: net.lymox.citybuild.plugin.CitybuildPlugin
+commands:
+  setWarp:
+  warp:
+  münzen:
+  pay:
