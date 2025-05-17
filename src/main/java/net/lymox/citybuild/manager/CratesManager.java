@@ -38,6 +38,8 @@ public class CratesManager {
             try {
                 int id = Integer.parseInt(key);
                 String name = configuration.getString(id+".Name");
+                boolean sellable = configuration.getBoolean(id+".Sellable");
+                int price = configuration.getInt(id+".Price");
                 List<String> itemsStr = configuration.getStringList(id+".Items");
                 List<ItemStack> items = new ArrayList<>();
                 for (String string : itemsStr) {
@@ -47,7 +49,7 @@ public class CratesManager {
                         throw new RuntimeException(e);
                     }
                 }
-                crates.add(new Crate(id, name, items));
+                crates.add(new Crate(id, name, items, sellable, price));
             }catch (NumberFormatException e){
                 e.printStackTrace();
             }
@@ -63,9 +65,22 @@ public class CratesManager {
         }
         return null;
     }
+
+    public Crate getCrate(int id){
+        for (Crate crate : getCrates()) {
+            if(crate.getId()==id){
+                return crate;
+            }
+        }
+        return null;
+    }
     
     public void createCrate(String name){
-        configuration.set(getNextID()+".Name", name);
+        int id = getNextID();
+        configuration.set(id+".Name", name);
+        configuration.set(id+".Items", new ArrayList<>());
+        configuration.set(id+".Sellable", false);
+        configuration.set(id+".Price", 0);
         save();
     }
 
@@ -79,6 +94,8 @@ public class CratesManager {
 
     public void saveCrate(Crate crate){
         configuration.set(crate.getId() + ".Name", crate.getName());
+        configuration.set(crate.getId() + ".Sellable", crate.isSellable());
+        configuration.set(crate.getId() + ".Price", crate.getPrice());
         List<String> items = new ArrayList<>();
         for (ItemStack item : crate.getItems()) {
             try {

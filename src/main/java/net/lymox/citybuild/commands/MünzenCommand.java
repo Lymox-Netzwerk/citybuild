@@ -42,6 +42,11 @@ public class MünzenCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Der Spieler <dark_red>" + args[1] + "</dark_red><red> existiert nicht")));
                     return true;
                 }
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                if(!offlinePlayer.hasPlayedBefore()){
+                    player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Der Spieler <dark_red>" + args[1] + "</dark_red><red> war noch nicht auf dem Server!")));
+                    return true;
+                }
                 Userdata userdata = new Userdata(uuid);
                 userdata.setMünzen(0);
                 player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Die Münzenanzahl von <b>" + args[1] + "</b> wurde auf <i>" + userdata.getMünzen() + "</i> gesetzt!")));

@@ -2,13 +2,13 @@ package net.lymox.citybuild.plugin;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.lymox.citybuild.commands.MünzenCommand;
-import net.lymox.citybuild.commands.PayCommand;
-import net.lymox.citybuild.commands.SetWarpCommand;
-import net.lymox.citybuild.commands.WarpCommand;
+import net.lymox.citybuild.commands.*;
 import net.lymox.citybuild.listeners.PlayerJoinListener;
 import net.lymox.citybuild.listeners.PlayerMoveListener;
 import net.lymox.citybuild.listeners.PlayerQuitListener;
+import net.lymox.citybuild.listeners.crates.CratesClickListener;
+import net.lymox.citybuild.listeners.crates.CratesMenuListener;
+import net.lymox.citybuild.listeners.crates.CratesInventoryListener;
 import net.lymox.citybuild.listeners.npc.shop.ShopPreventDeathListener;
 import net.lymox.citybuild.manager.Managers;
 import org.bukkit.Bukkit;
@@ -28,6 +28,9 @@ public class CitybuildPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), this);
         Bukkit.getPluginManager().registerEvents(new ShopPreventDeathListener(), this);
+        Bukkit.getPluginManager().registerEvents(new CratesInventoryListener(), this);
+        Bukkit.getPluginManager().registerEvents(new CratesMenuListener(), this);
+        Bukkit.getPluginManager().registerEvents(new CratesClickListener(), this);
 
         getCommand("setwarp").setExecutor(new SetWarpCommand());
         getCommand("münzen").setExecutor(new MünzenCommand());
@@ -35,6 +38,8 @@ public class CitybuildPlugin extends JavaPlugin {
         getCommand("warp").setExecutor(new WarpCommand());
         getCommand("warp").setTabCompleter(new WarpCommand());
         getCommand("pay").setExecutor(new PayCommand());
+        getCommand("crates").setExecutor(new CratesCommand());
+        getCommand("crates").setTabCompleter(new CratesCommand());
     }
 
     @Override

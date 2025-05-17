@@ -16,10 +16,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerJoinListener implements Listener {
 
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         LymoxPlayer lymoxPlayer = CoreSpigotPlugin.getInstance().getPlayerService().loadPlayer(player.getUniqueId());
+
         event.setJoinMessage("§a» " + lymoxPlayer.displayName() + "§7" + player.getName() + " hat CityBuild betreten");
 
         new BukkitRunnable() {

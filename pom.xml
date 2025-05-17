@@ -24,6 +24,10 @@
             <name>Lumine Releases</name>
             <url>https://mvn.lumine.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>matteodev</id>
+            <url>https://maven.devs.beer/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -46,14 +50,20 @@
             <version>0.0.9</version>
             <scope>system</scope>
             <systemPath>D:/Programmieren/Plorax/core/core-spigot/target/core-spigot-0.0.9.jar</systemPath>
-        </dependency><dependency>
-        <groupId>io.lumine</groupId>
-        <artifactId>Mythic-Dist</artifactId>
-        <version>5.6.1</version>
-        <scope>provided</scope>
-    </dependency>
-
-
+        </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>Mythic-Dist</artifactId>
+            <version>5.6.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.lone</groupId>
+            <artifactId>api-itemsadder</artifactId>
+            <!-- Replace {version} with the latest version -->
+            <version>4.0.10</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>
