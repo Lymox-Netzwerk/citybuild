@@ -2,6 +2,9 @@ package net.lymox.citybuild.utils;
 
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.userdata.Crate;
+import net.lymox.citybuild.utils.userdata.skills.Monsterjäger;
+import net.lymox.citybuild.utils.userdata.skills.enums.SkillType;
+import net.lymox.citybuild.utils.userdata.skills.interfaces.Skill;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -127,6 +130,28 @@ public class Userdata {
             configuration.set("crate." + crate.getId() + ".amount", crate.getAmount() - amount);
         }
         save();
+    }
+
+    public Skill getSkill(SkillType skillType){
+        if(skillType.equals(SkillType.MONSTERJÄGER)){
+            if(!configuration.contains("skills.monster")){
+                configuration.set("skills.monster.xp", 0);
+                configuration.set("skills.monster.kills", 0);
+                save();
+            }
+            int xp = configuration.getInt("skills.monster.xp");
+            int kills = configuration.getInt("skills.monster.kills");
+            return new Monsterjäger(kills, xp);
+        }
+        return null;
+    }
+
+    public void saveSkill(Skill skill){
+        if(skill instanceof Monsterjäger monsterjäger){
+            configuration.set("skills.monster.xp", monsterjäger.getExp());
+            configuration.set("skills.monster.kills", monsterjäger.getKills());
+            save();
+        }
     }
 
     private void save(){

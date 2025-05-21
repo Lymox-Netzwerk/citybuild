@@ -4,6 +4,7 @@ api-version: 1.21
 main: net.lymox.citybuild.plugin.CitybuildPlugin
 commands:
   setWarp:
+  delWarp:
   warp:
   münzen:
   pay:

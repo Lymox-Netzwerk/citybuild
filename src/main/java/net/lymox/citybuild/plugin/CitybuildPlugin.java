@@ -9,6 +9,7 @@ import net.lymox.citybuild.listeners.PlayerQuitListener;
 import net.lymox.citybuild.listeners.crates.CratesClickListener;
 import net.lymox.citybuild.listeners.crates.CratesMenuListener;
 import net.lymox.citybuild.listeners.crates.CratesInventoryListener;
+import net.lymox.citybuild.listeners.entitys.EntityDeathListener;
 import net.lymox.citybuild.listeners.npc.shop.ShopPreventDeathListener;
 import net.lymox.citybuild.listeners.shop.ShopClickListener;
 import net.lymox.citybuild.listeners.shop.ShopEditClickListener;
@@ -35,8 +36,11 @@ public class CitybuildPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CratesClickListener(), this);
         Bukkit.getPluginManager().registerEvents(new ShopEditClickListener(), this);
         Bukkit.getPluginManager().registerEvents(new ShopClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new EntityDeathListener(), this);
 
         getCommand("setwarp").setExecutor(new SetWarpCommand());
+        getCommand("delwarp").setExecutor(new DelWarpCommand());
+        getCommand("delwarp").setTabCompleter(new DelWarpCommand());
         getCommand("münzen").setExecutor(new MünzenCommand());
         getCommand("münzen").setTabCompleter(new MünzenCommand());
         getCommand("warp").setExecutor(new WarpCommand());
