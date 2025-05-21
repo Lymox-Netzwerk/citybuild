@@ -4,9 +4,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.lymox.citybuild.manager.CratesManager;
 import net.lymox.citybuild.manager.GUIManager;
-import net.lymox.citybuild.manager.objects.Crate;
+import net.lymox.citybuild.manager.objects.crates.Crate;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
-import net.lymox.core.spigot.plugin.CoreSpigotPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,7 +27,7 @@ public class CratesInventoryListener implements Listener {
         if(event.getCurrentItem().getType().equals(Material.AIR)||event.getCurrentItem().getItemMeta()==null||event.getCurrentItem().getItemMeta().displayName()==null)return;
         if(event.getView().title()==null)return;
         String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
-        if(title.contains("ᴄʀᴀᴛᴇ") && title.contains("ʙᴇᴀʀʙᴇɪᴛᴇɴ")){
+        if(title.contains("ᴄʀᴀᴛᴇ") && title.contains("ʙᴇᴀʀʙᴇɪᴛᴇɴ") && !title.contains("ɪɴʜᴀʟᴛ")){
             String[] titleSpl = title.split(" ");
             Crate crate = cratesManager.getCrate(titleSpl[1]);
             event.setCancelled(true);

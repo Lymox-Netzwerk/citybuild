@@ -4,8 +4,8 @@ import dev.lone.itemsadder.api.Events.FurnitureInteractEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.lymox.citybuild.manager.CratesManager;
 import net.lymox.citybuild.manager.GUIManager;
-import net.lymox.citybuild.manager.objects.Crate;
-import net.lymox.citybuild.manager.objects.CrateOpener;
+import net.lymox.citybuild.manager.objects.crates.Crate;
+import net.lymox.citybuild.manager.objects.crates.CrateOpener;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -53,8 +53,7 @@ public class CratesMenuListener implements Listener {
                 }
             }
         }
-        System.out.println(title);
-        if (title.contains("ɪɴʜᴀʟᴛ ᴠᴏᴍ ᴄʀᴀᴛᴇ")) {
+        if(title.contains("ɪɴʜᴀʟᴛ ᴠᴏᴍ") && title.contains("ᴄʀᴀᴛᴇ") && !title.contains("ʙᴇᴀʀʙᴇɪᴛᴇɴ")) {
             event.setCancelled(true);
         }
     }

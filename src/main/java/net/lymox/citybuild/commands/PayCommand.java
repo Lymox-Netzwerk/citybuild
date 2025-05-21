@@ -44,7 +44,7 @@ public class PayCommand implements CommandExecutor {
                 new Userdata(target.getUniqueId()).addMünzen(amount);
                 CitybuildPlugin.getInstance().getManagers().getScoreboardManager().setDefaultScore(target);
                 player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Du hast <b>" + CoreSpigotPlugin.getInstance().getPlayerService().loadPlayer(target.getUniqueId()).displayColor() + target.getName() + "</b><yellow> <i>" + amount + "</i> Münzen <gray>überwiesen.")));
-                target.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Du hast von <b>" + CoreSpigotPlugin.getInstance().getPlayerService().loadPlayer(target.getUniqueId()).displayColor() + target.getName() + "</b><yellow> <i>" + amount + "</i> Münzen <gray>überwiesen bekommen.")));
+                target.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Du hast von <b>" + CoreSpigotPlugin.getInstance().getPlayerService().loadPlayer(player.getUniqueId()).displayColor() + player.getName() + "</b><yellow> <i>" + amount + "</i> Münzen <gray>überwiesen bekommen.")));
             }catch (NumberFormatException e){
                 player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Die Anzahl muss eine Zahl sein!")));
             }

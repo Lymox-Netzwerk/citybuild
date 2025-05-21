@@ -1,9 +1,10 @@
 package net.lymox.citybuild.manager;
 
-import io.lumine.mythic.bukkit.utils.lib.jooq.impl.QOM;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.lymox.citybuild.manager.objects.Crate;
+import net.lymox.citybuild.manager.objects.crates.Crate;
+import net.lymox.citybuild.manager.objects.shop.Categorie;
+import net.lymox.citybuild.manager.objects.shop.ShopItem;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.ItemCreator;
 import net.lymox.citybuild.utils.Userdata;
@@ -12,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,6 +148,93 @@ public class GUIManager {
         }
 
         return 0;
+    }
+
+    public Inventory editCategorie(Categorie categorie){
+        Inventory inventory = Bukkit.createInventory(null, 9*6, "ʙᴇᴀʀʙᴇɪᴛᴇ ᴋᴀᴛᴇɢᴏʀɪᴇ " + categorie.getName());
+
+        for(int i = 45; i <= 53; i++){
+            inventory.setItem(i, new ItemCreator(Material.BLACK_STAINED_GLASS_PANE).displayName(Component.empty()).build());
+        }
+
+        inventory.setItem(49, new ItemCreator(Material.GREEN_DYE).displayName(MiniMessage.miniMessage().deserialize("<green>Gegenstand hinzufügen")).build());
+
+        int count = 0;
+        for (ShopItem item : categorie.getItems()) {
+            count+=1;
+            if(count < 45){
+                ItemStack itemStack = item.getItemStack();
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                ArrayList<Component> lore = new ArrayList<>();
+                lore.add(MiniMessage.miniMessage().deserialize("<white>ᴘʀᴇɪs: <yellow>" + item.getPrice() + " ᴍüɴᴢᴇɴ"));
+                lore.add(MiniMessage.miniMessage().deserialize("<white>sʟᴏᴛ: <gray>" + (item.getInventorySlot()+1)));
+                lore.add(MiniMessage.miniMessage().deserialize("<white>Linksklick zum bearbeiten"));
+                itemMeta.lore(lore);
+                itemStack.setItemMeta(itemMeta);
+                inventory.addItem(itemStack);
+            }
+        }
+
+        return inventory;
+    }
+
+    public Inventory addItemToCategorie(Categorie categorie){
+        Inventory inventory = Bukkit.createInventory(null, 9*2, categorie.getName()+" ɢᴇɢᴇɴsᴛᴀɴᴅ ʜɪɴᴢᴜғüɢᴇɴ");
+
+        for(int i = 0; i <= 17; i++){
+            if(i != 2)
+                inventory.setItem(i, new ItemCreator(Material.BLACK_STAINED_GLASS_PANE).displayName(Component.empty()).build());
+        }
+
+        inventory.setItem(6, new ItemCreator(Material.GOLD_INGOT).displayName(MiniMessage.miniMessage().deserialize("<gray>ᴘʀᴇɪs: 0")).lore(MiniMessage.miniMessage().deserialize("<white>Linksklick zum erhöhen"), MiniMessage.miniMessage().deserialize("<white>Rechtsklick zum verringern")).build());
+
+        inventory.setItem(17, new ItemCreator(Material.GREEN_DYE).displayName(MiniMessage.miniMessage().deserialize("<green>Hinzufügen")).build());
+        return inventory;
+    }
+
+    public Inventory openShop(Categorie categorie) {
+        ShopManager shopManager = CitybuildPlugin.getInstance().getManagers().getShopManager();
+        Inventory inventory = Bukkit.createInventory(null, 9 * 6, "§c§lShop §8● §f" + categorie.getName());
+
+        // Kategorien unten im Menü anzeigen (maximal 9 Stück)
+        List<Categorie> categories = shopManager.getCategories();
+        int startSlot = 45;
+        for (int j = 0; j < categories.size() && j < 9; j++) {
+            Categorie cate = categories.get(j);
+            if (cate != null && cate.getMaterial() != null) {
+                boolean selected = categorie.getId() == cate.getId();
+                Component name = MiniMessage.miniMessage().deserialize((selected ? "<white><b>" : "<white>") + cate.getName());
+                ItemStack item = new ItemCreator(cate.getMaterial()).displayName(name).build();
+                inventory.setItem(startSlot + j, item);
+            }
+        }
+
+        for(int i = 36; i <= 44; i++){
+            inventory.setItem(i, new ItemCreator(Material.BLACK_STAINED_GLASS_PANE).displayName(Component.empty()).build());
+        }
+
+        for(int i = 45; i <= 53; i++){
+            if(inventory.getItem(i)==null||inventory.getItem(i).getType().equals(Material.AIR))
+                inventory.setItem(i, new ItemCreator(Material.WHITE_STAINED_GLASS_PANE).displayName(Component.empty()).build());
+        }
+
+        // Items der aktuell gewählten Kategorie anzeigen
+        for (ShopItem shopItem : categorie.getItems()) {
+            ItemStack itemStack = shopItem.getItemStack();
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            List<Component> lore = new ArrayList<>();
+            lore.add(MiniMessage.miniMessage().deserialize("<gray>ᴘʀᴇɪs: " + shopItem.getPrice()));
+            lore.add(MiniMessage.miniMessage().deserialize("<white>ʟɪɴᴋᴋʟɪᴄᴋ ᴢᴜᴍ ᴋᴀᴜғᴇɴ"));
+            itemMeta.lore(lore);
+            itemStack.setItemMeta(itemMeta);
+
+            int slot = shopItem.getInventorySlot();
+            if (slot >= 0 && slot < 35) {
+                inventory.setItem(slot, itemStack);
+            }
+        }
+
+        return inventory;
     }
 
 }

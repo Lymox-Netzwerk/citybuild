@@ -1,4 +1,4 @@
-package net.lymox.citybuild.manager.objects;
+package net.lymox.citybuild.manager.objects.crates;
 
 import org.bukkit.inventory.ItemStack;
 

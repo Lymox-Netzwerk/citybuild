@@ -10,6 +10,8 @@ import net.lymox.citybuild.listeners.crates.CratesClickListener;
 import net.lymox.citybuild.listeners.crates.CratesMenuListener;
 import net.lymox.citybuild.listeners.crates.CratesInventoryListener;
 import net.lymox.citybuild.listeners.npc.shop.ShopPreventDeathListener;
+import net.lymox.citybuild.listeners.shop.ShopClickListener;
+import net.lymox.citybuild.listeners.shop.ShopEditClickListener;
 import net.lymox.citybuild.manager.Managers;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +33,8 @@ public class CitybuildPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CratesInventoryListener(), this);
         Bukkit.getPluginManager().registerEvents(new CratesMenuListener(), this);
         Bukkit.getPluginManager().registerEvents(new CratesClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ShopEditClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ShopClickListener(), this);
 
         getCommand("setwarp").setExecutor(new SetWarpCommand());
         getCommand("münzen").setExecutor(new MünzenCommand());
@@ -40,6 +44,12 @@ public class CitybuildPlugin extends JavaPlugin {
         getCommand("pay").setExecutor(new PayCommand());
         getCommand("crates").setExecutor(new CratesCommand());
         getCommand("crates").setTabCompleter(new CratesCommand());
+        getCommand("shop").setExecutor(new ShopCommand());
+        getCommand("shop").setTabCompleter(new ShopCommand());
+        getCommand("item").setExecutor(new ItemCommand());
+        getCommand("item").setTabCompleter(new ItemCommand());
+        getCommand("settings").setExecutor(new SettingsCommand());
+        getCommand("settings").setTabCompleter(new SettingsCommand());
     }
 
     @Override

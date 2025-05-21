@@ -56,6 +56,9 @@ public class ScoreboardManger {
         sidebarBuilder.addLine("&8» &7&lᴅᴇɪɴᴇ sᴘɪᴇʟᴢᴇɪᴛ", 2);
         sidebarBuilder.addLine(" &8│ &a&l" + FormatedPlaytime(player), 1);
         sidebarBuilder.addLine("    ", 0);
+        if(CitybuildPlugin.getInstance().getManagers().getServerManager().isMaintenance()){
+            sidebarBuilder.addLine("§cᴡᴀʀᴛᴜɴɢᴇɴ sɪɴᴅ ᴀᴋᴛɪᴠ", -1);
+        }
 
         sidebarBuilder.setToPlayer(player);
 

@@ -17,7 +17,7 @@ public class CratesClickListener implements Listener {
         if (event.getCurrentItem().getType().equals(Material.AIR))
             return;
         String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
-        if (title.contains("ɪɴʜᴀʟᴛ ᴠᴏᴍ ᴄʀᴀᴛᴇ")) {
+        if(title.contains("ɪɴʜᴀʟᴛ ᴠᴏᴍ") && title.contains("ᴄʀᴀᴛᴇ") && !title.contains("ʙᴇᴀʀʙᴇɪᴛᴇɴ")) {
             event.setCancelled(true);
         }
     }

@@ -3,7 +3,7 @@ package net.lymox.citybuild.commands;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.lymox.citybuild.manager.CratesManager;
 import net.lymox.citybuild.manager.GUIManager;
-import net.lymox.citybuild.manager.objects.Crate;
+import net.lymox.citybuild.manager.objects.crates.Crate;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.Messages;
 import net.lymox.citybuild.utils.Userdata;
@@ -16,7 +16,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

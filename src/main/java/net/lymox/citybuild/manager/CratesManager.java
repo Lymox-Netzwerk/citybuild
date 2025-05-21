@@ -1,6 +1,6 @@
 package net.lymox.citybuild.manager;
 
-import net.lymox.citybuild.manager.objects.Crate;
+import net.lymox.citybuild.manager.objects.crates.Crate;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.Converter;
 import org.bukkit.configuration.file.YamlConfiguration;

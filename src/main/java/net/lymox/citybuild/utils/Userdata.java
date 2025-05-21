@@ -72,8 +72,10 @@ public class Userdata {
             for (String crate : configuration.getConfigurationSection("crate").getKeys(false)) {
                 try {
                     int id = Integer.parseInt(crate);
-                    int amount = configuration.getInt("crate." + id + ".amount");
-                    crates.add(new Crate(id, amount));
+                    if (CitybuildPlugin.getInstance().getManagers().getCratesManager().getCrate(id)!=null){
+                        int amount = configuration.getInt("crate." + id + ".amount");
+                        crates.add(new Crate(id, amount));
+                    }
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
