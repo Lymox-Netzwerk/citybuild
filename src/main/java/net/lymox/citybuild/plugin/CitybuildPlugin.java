@@ -14,6 +14,7 @@ import net.lymox.citybuild.listeners.npc.shop.ShopPreventDeathListener;
 import net.lymox.citybuild.listeners.shop.ShopClickListener;
 import net.lymox.citybuild.listeners.shop.ShopEditClickListener;
 import net.lymox.citybuild.manager.Managers;
+import net.lymox.citybuild.utils.ClearLag;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,11 +22,13 @@ public class CitybuildPlugin extends JavaPlugin {
 
     private static CitybuildPlugin instance;
     private Managers managers;
+    private ClearLag clearLag;
 
     @Override
     public void onEnable() {
         instance = this;
         managers = new Managers();
+        clearLag = new ClearLag();
 
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(), this);

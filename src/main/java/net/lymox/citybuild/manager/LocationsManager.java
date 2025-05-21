@@ -42,11 +42,9 @@ public class LocationsManager {
     public List<String> getWarps(){
         ConfigurationSection section = configuration.getConfigurationSection("Warp");
         if (section == null) {
-            System.out.println("Section 'Warp' not found or is not a section.");
             return List.of();  // oder Collections.emptyList()
         }
         List<String> keys = new ArrayList<>(section.getKeys(false));
-        System.out.println("Warp : " + keys);
         return keys;
     }
 
