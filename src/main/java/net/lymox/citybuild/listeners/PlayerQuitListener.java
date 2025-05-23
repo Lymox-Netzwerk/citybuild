@@ -22,7 +22,7 @@ public class PlayerQuitListener implements Listener {
                return;
            }
         }
-        event.setQuitMessage("§c« " + lymoxPlayer.displayName() + "§7" + player.getName() + " hat CityBuild verlassen");
+        event.setQuitMessage("§c« " + lymoxPlayer.displayName() + "§7" + player.getName() + " hat den CityBuild verlassen");
     }
 
 

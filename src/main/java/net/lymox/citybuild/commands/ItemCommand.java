@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -61,6 +62,30 @@ public class ItemCommand implements CommandExecutor, TabCompleter {
                 player.getInventory().setItemInMainHand(itemStack);
                 player.updateInventory();
                 player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Item umbenannt")));
+            }else if(args[0].equalsIgnoreCase("enchant")){
+                String enchantmentString = args[1];
+                Enchantment enchantment = Enchantment.getByName(enchantmentString);
+                if(enchantment==null){
+                    player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red><b>" + enchantmentString + "</b> ist kein gültiges Enchantment!")));
+                    return true;
+                }
+                try {
+                    int strength = Integer.parseInt(args[2]);
+                    if(player.getInventory().getItemInMainHand().getItemMeta()==null){
+                        player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Du musst ein Item in der Hand halten")));
+                        return true;
+                    }
+
+                    ItemStack itemStack = player.getInventory().getItemInMainHand();
+                    ItemMeta itemMeta = itemStack.getItemMeta();
+                    itemMeta.addEnchant(enchantment, strength, true);
+                    itemStack.setItemMeta(itemMeta);
+                    player.getInventory().setItemInMainHand(itemStack);
+                    player.updateInventory();
+                    player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<green>Item verzaubert")));
+                }catch (NumberFormatException e){
+                    player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Die Stärke muss eine Zahl sein!")));
+                }
             }
         }
         return false;
@@ -73,7 +98,16 @@ public class ItemCommand implements CommandExecutor, TabCompleter {
         if(args.length == 1){
             List<String> tab = new ArrayList<>();
             tab.add("name");
+            tab.add("enchant");
             return tab.stream().filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
+        }else if(args.length == 2){
+            if(args[0].equalsIgnoreCase("enchant")) {
+                List<String> tab = new ArrayList<>();
+                for (@NotNull Enchantment value : Enchantment.values()) {
+                    tab.add(value.getName());
+                }
+                return tab.stream().filter(name -> name.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
+            }
         }
         return List.of();
     }

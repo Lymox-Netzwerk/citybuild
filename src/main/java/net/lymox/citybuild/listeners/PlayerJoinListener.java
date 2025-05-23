@@ -31,17 +31,13 @@ public class PlayerJoinListener implements Listener {
             }
         }
 
-        event.setJoinMessage("§a» " + lymoxPlayer.displayName() + "§7" + player.getName() + " hat CityBuild betreten");
+        event.setJoinMessage("§a» " + lymoxPlayer.displayName() + "§7" + player.getName() + " hat den CityBuild betreten");
 
         new BukkitRunnable() {
             @Override
             public void run() {
+                Location spawn = CitybuildPlugin.getInstance().getManagers().getLocationsManager().get("Warp.Spawn");
                 if(!player.hasPlayedBefore()){
-                    Location spawn = CitybuildPlugin.getInstance().getManagers().getLocationsManager().get("Warp.Spawn");
-                    if(spawn!=null){
-                        player.teleport(spawn);
-                    }
-
                     //Starter-Set
                     player.getInventory().addItem(new ItemStack(Material.STONE_SWORD));
                     player.getInventory().addItem(new ItemStack(Material.STONE_PICKAXE));
@@ -50,6 +46,9 @@ public class PlayerJoinListener implements Listener {
                     player.getInventory().addItem(new ItemStack(Material.OAK_LOG, 16));
                     player.getInventory().addItem(new ItemStack(Material.BREAD, 32));
                     new Userdata(player.getUniqueId()).setMünzen(500);
+                }
+                if(spawn != null) {
+                    player.teleport(spawn);
                 }
             }
         }.runTaskLater(CitybuildPlugin.getInstance(), 5);

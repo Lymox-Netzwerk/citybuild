@@ -57,9 +57,30 @@ public class CratesManager {
         return crates;
     }
 
+    public List<Crate> getSellableCrates(){
+        List<Crate> list = new ArrayList<>();
+        for (Crate crate : getCrates()) {
+            if(crate.isSellable()){
+                list.add(crate);
+            }
+        }
+        return list;
+    }
+
     public Crate getCrate(String name){
         for (Crate crate : getCrates()) {
             if(crate.getName().equalsIgnoreCase(name)){
+                return crate;
+            }
+        }
+        return null;
+    }
+
+    public Crate getCrateRaw(String name){
+        String output = name.replaceAll("&[0-9a-fk-or]", "");
+        System.out.println("output: " + output);
+        for (Crate crate : getCrates()) {
+            if(crate.getName().equalsIgnoreCase(output)){
                 return crate;
             }
         }

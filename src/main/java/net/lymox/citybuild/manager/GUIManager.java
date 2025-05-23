@@ -2,14 +2,19 @@ package net.lymox.citybuild.manager;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.luckperms.api.LuckPermsProvider;
+import net.lymox.citybuild.listeners.storage.StorageClickListener;
 import net.lymox.citybuild.manager.objects.crates.Crate;
 import net.lymox.citybuild.manager.objects.shop.Categorie;
 import net.lymox.citybuild.manager.objects.shop.ShopItem;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.ItemCreator;
 import net.lymox.citybuild.utils.Userdata;
+import net.lymox.citybuild.utils.userdata.storage.Storage;
+import net.lymox.core.master.manager.PermissionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -17,6 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class GUIManager {
 
@@ -67,31 +73,42 @@ public class GUIManager {
         }
 
         int i = 1;
-        for (net.lymox.citybuild.utils.userdata.Crate crateH : userdata.getCrates()) {
+
+        for (Crate crate : CitybuildPlugin.getInstance().getManagers().getCratesManager().getCrates()) {
+            net.lymox.citybuild.utils.userdata.Crate crateH = userdata.getCrate(crate.getId());
             if(i < 6) {
-                Crate crate = CitybuildPlugin.getInstance().getManagers().getCratesManager().getCrate(crateH.getId());
                 String name = crate.getName();
                 name = name.replace("&", "§");
-                inventory.setItem(slot(i, userdata), new ItemCreator(Material.PAPER).displayName(name).lore(MiniMessage.miniMessage().deserialize("<gray>ᴀɴᴢᴀʜʟ: " + crateH.getAmount()), MiniMessage.miniMessage().deserialize("<white>Linksklick zum Benutzen"), MiniMessage.miniMessage().deserialize("<white>Rechtsklick zum Einsehen der Inhalte")).add("crate", "" + crate.getId()).build());
+                inventory.setItem(slot(i, userdata), new ItemCreator(Material.PAPER).displayName(name).lore(MiniMessage.miniMessage().deserialize("<gray>ᴀɴᴢᴀʜʟ: " + (crateH==null?"0":""+crateH.getAmount())), MiniMessage.miniMessage().deserialize("<white>Linksklick zum Benutzen"), MiniMessage.miniMessage().deserialize("<white>Rechtsklick zum Einsehen der Inhalte")).add("crate", "" + crate.getId()).build());
                 i++;
             }
         }
+
+//        for (net.lymox.citybuild.utils.userdata.Crate crateH : userdata.getCrates()) {
+//            if(i < 6) {
+//                Crate crate = CitybuildPlugin.getInstance().getManagers().getCratesManager().getCrate(crateH.getId());
+//                String name = crate.getName();
+//                name = name.replace("&", "§");
+//                inventory.setItem(slot(i, userdata), new ItemCreator(Material.PAPER).displayName(name).lore(MiniMessage.miniMessage().deserialize("<gray>ᴀɴᴢᴀʜʟ: " + crateH.getAmount()), MiniMessage.miniMessage().deserialize("<white>Linksklick zum Benutzen"), MiniMessage.miniMessage().deserialize("<white>Rechtsklick zum Einsehen der Inhalte")).add("crate", "" + crate.getId()).build());
+//                i++;
+//            }
+//        }
 
         return inventory;
     }
 
     private int slot(int i, Userdata userdata){
         CratesManager cratesManager = CitybuildPlugin.getInstance().getManagers().getCratesManager();
-        List<Crate> crates = new ArrayList<>();
-        for (Crate crate : cratesManager.getCrates()) {
-            if(!crate.getItems().isEmpty()){
-                if(userdata.getCrate(crate.getId())!=null){
-                    if(userdata.getCrate(crate.getId()).getAmount()>0) {
-                        crates.add(crate);
-                    }
-                }
-            }
-        }
+        //        for (Crate crate : cratesManager.getCrates()) {
+//            if(!crate.getItems().isEmpty()){
+//                if(userdata.getCrate(crate.getId())!=null){
+//                    if(userdata.getCrate(crate.getId()).getAmount()>0) {
+//                        crates.add(crate);
+//                    }
+//                }
+//            }
+//        }
+        List<Crate> crates = new ArrayList<>(cratesManager.getCrates());
 
         if(crates.size()==1) {
             return 22;
@@ -192,21 +209,34 @@ public class GUIManager {
         return inventory;
     }
 
-    public Inventory openShop(Categorie categorie) {
+    public Inventory openShop(Categorie categorie, boolean isCrates) {
         ShopManager shopManager = CitybuildPlugin.getInstance().getManagers().getShopManager();
-        Inventory inventory = Bukkit.createInventory(null, 9 * 6, "§c§lShop §8● §f" + categorie.getName());
+        CratesManager cratesManager = CitybuildPlugin.getInstance().getManagers().getCratesManager();
+        Inventory inventory = Bukkit.createInventory(null, 9 * 6, "§c§lShop §8● §f" + (isCrates?"Crates":categorie.getName()));
 
         // Kategorien unten im Menü anzeigen (maximal 9 Stück)
         List<Categorie> categories = shopManager.getCategories();
         int startSlot = 45;
+        int lastSlot = 0;
         for (int j = 0; j < categories.size() && j < 9; j++) {
             Categorie cate = categories.get(j);
             if (cate != null && cate.getMaterial() != null) {
                 boolean selected = categorie.getId() == cate.getId();
+                if(isCrates){
+                    selected = false;
+                }
                 Component name = MiniMessage.miniMessage().deserialize((selected ? "<white><b>" : "<white>") + cate.getName());
                 ItemStack item = new ItemCreator(cate.getMaterial()).displayName(name).build();
                 inventory.setItem(startSlot + j, item);
+                lastSlot = startSlot + j;
             }
+        }
+
+        if(!cratesManager.getSellableCrates().isEmpty()){
+            lastSlot=lastSlot+1;
+            Component name = MiniMessage.miniMessage().deserialize((isCrates ? "<white><b>" : "<white>") + "Crates");
+            ItemStack item = new ItemCreator(Material.PAPER).displayName(name).build();
+            inventory.setItem(lastSlot, item);
         }
 
         for(int i = 36; i <= 44; i++){
@@ -219,22 +249,87 @@ public class GUIManager {
         }
 
         // Items der aktuell gewählten Kategorie anzeigen
-        for (ShopItem shopItem : categorie.getItems()) {
-            ItemStack itemStack = shopItem.getItemStack();
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            List<Component> lore = new ArrayList<>();
-            lore.add(MiniMessage.miniMessage().deserialize("<gray>ᴘʀᴇɪs: " + shopItem.getPrice()));
-            lore.add(MiniMessage.miniMessage().deserialize("<white>ʟɪɴᴋᴋʟɪᴄᴋ ᴢᴜᴍ ᴋᴀᴜғᴇɴ"));
-            itemMeta.lore(lore);
-            itemStack.setItemMeta(itemMeta);
+        if(isCrates){
+            int slot = 0;
+            for (Crate sellableCrate : cratesManager.getSellableCrates()) {
+                ItemStack itemStack = new ItemStack(Material.PAPER);
+                ItemMeta itemMeta = itemStack.getItemMeta();
 
-            int slot = shopItem.getInventorySlot();
-            if (slot >= 0 && slot < 35) {
-                inventory.setItem(slot, itemStack);
+                String name = sellableCrate.getName();
+                name = name.replace("&", "§");
+
+                itemMeta.setDisplayName(name);
+
+                List<Component> lore = new ArrayList<>();
+                lore.add(MiniMessage.miniMessage().deserialize("<gray>ᴘʀᴇɪs: " + (sellableCrate.getPrice()==0?"Kostenlos":""+sellableCrate.getPrice())));
+                lore.add(MiniMessage.miniMessage().deserialize("<white>ʟɪɴᴋᴋʟɪᴄᴋ ᴢᴜᴍ ᴋᴀᴜғᴇɴ"));
+                itemMeta.lore(lore);
+                itemStack.setItemMeta(itemMeta);
+                if (slot >= 0 && slot < 35) {
+                    inventory.setItem(slot, itemStack);
+                    slot++;
+                }
+            }
+        }else {
+            for (ShopItem shopItem : categorie.getItems()) {
+                ItemStack itemStack = shopItem.getItemStack();
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                List<Component> lore = new ArrayList<>();
+                lore.add(MiniMessage.miniMessage().deserialize("<gray>ᴘʀᴇɪs: " + (shopItem.getPrice()==0?"Kostenlos":""+shopItem.getPrice())));
+                lore.add(MiniMessage.miniMessage().deserialize("<white>ʟɪɴᴋᴋʟɪᴄᴋ ᴢᴜᴍ ᴋᴀᴜғᴇɴ"));
+                itemMeta.lore(lore);
+                itemStack.setItemMeta(itemMeta);
+
+                int slot = shopItem.getInventorySlot();
+                if (slot >= 0 && slot < 35) {
+                    inventory.setItem(slot, itemStack);
+                }
             }
         }
 
         return inventory;
     }
+
+    public Inventory openStorage(UUID uuid, int id){
+        Userdata userdata = new Userdata(uuid);
+        if(id == 0){
+            Inventory inventory = Bukkit.createInventory(null, 9, "§a§lDeine Storages");
+            int i = 1;
+            for (Storage storage : userdata.getStorages()) {
+                ItemStack itemStack = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+                if(storage.isBought()){
+                    itemStack = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
+                }
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                itemMeta.displayName(MiniMessage.miniMessage().deserialize(i +". sᴛᴏʀᴀɢᴇ"));
+                List<Component> lore = new ArrayList<>();
+                if(storage.isBought()|| StorageClickListener.hasStoragePermission(uuid, i)){
+                    lore.add(MiniMessage.miniMessage().deserialize("<green>Freigeschaltet"));
+                }else {
+                    boolean canBeBought = false;
+                    if(i <= 2){
+                        canBeBought = true;
+                    }else {
+                        if(userdata.getStorage(i-1).isBought()){
+                            canBeBought = true;
+                        }
+                    }
+                    if(canBeBought){
+                        lore.add(MiniMessage.miniMessage().deserialize("<red>Kaufen für X"));
+                    }else {
+                        lore.add(MiniMessage.miniMessage().deserialize("<red>Kaufe erst den " +(i-1)+ ". sᴛᴏʀᴀɢᴇ"));
+                    }
+                }
+                itemMeta.lore(lore);
+                itemStack.setItemMeta(itemMeta);
+                inventory.setItem(i-1, itemStack);
+                i++;
+            }
+            return inventory;
+        }
+        return null;
+    }
+
+
 
 }

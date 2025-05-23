@@ -31,6 +31,7 @@ public class ServerManager {
     private void loadDefaults(){
         configuration.addDefault("maintenanceMode", true);
         configuration.addDefault("permissionMaintenanceJoin", "lymox.citybuild.maintenance.bypass");
+        configuration.addDefault("spawnProtectionRadius", 300);
         save();
     }
 
@@ -45,6 +46,10 @@ public class ServerManager {
 
     public String getMaintenancePermission(){
         return configuration.getString("permissionMaintenanceJoin");
+    }
+
+    public int getSpawnProtectionRadius(){
+        return configuration.getInt("spawnProtectionRadius");
     }
 
     public void save(){

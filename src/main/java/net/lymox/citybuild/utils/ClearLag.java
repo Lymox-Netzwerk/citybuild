@@ -12,7 +12,7 @@ public class ClearLag {
     private int time;
 
     public ClearLag() {
-        time = 20*60*10;
+        time = 60*10;
         forceClearLag();
         start();
     }
@@ -21,12 +21,12 @@ public class ClearLag {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(CitybuildPlugin.getInstance(), new Runnable() {
             @Override
             public void run() {
-                if(time == 20*60*5){
+                if(time == 60*5){
                     String message = Messages.clearlag;
                     message = message.replace("%c", "5");
                     Bukkit.broadcast(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize(message)));
                 }
-                if(time == 20*60){
+                if(time == 60){
                     String message = Messages.clearlag;
                     message = message.replace("%c", "1");
                     Bukkit.broadcast(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize(message)));

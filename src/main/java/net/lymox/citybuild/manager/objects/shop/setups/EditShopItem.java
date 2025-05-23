@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,6 +47,7 @@ public class EditShopItem implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent event){
         if(!(event.getWhoClicked() instanceof Player player))return;
+        if(this.player!=player)return;
         if(event.getClickedInventory().equals(inventory)){
             event.setCancelled(true);
         }
@@ -66,26 +68,34 @@ public class EditShopItem implements Listener {
             itemnameRaw = itemnameRaw.replace("]", "");
             String[] itemname = itemnameRaw.split(" ");
             int amount = Integer.parseInt(itemname[1]);
+            boolean up = true;
             if(event.isLeftClick()){
                 amount+=1;
             }else if(event.isRightClick()){
                 if(amount > 1){
                     amount-=1;
+                    up = false;
                 }
             }
+
+            for (ShopItem item : categorie.getItems()) {
+                if(item.getInventorySlot()==(amount-1)){
+                    System.out.println("same slot");
+                    if(up){
+                        item.setInventorySlot(item.getInventorySlot()-1);
+                    }else {
+                        item.setInventorySlot(item.getInventorySlot()+1);
+                    }
+                }
+            }
+            shopItem.setInventorySlot(amount-1);
+            categorie.save();
+
             ItemMeta meta = itemStack.getItemMeta();
             meta.displayName(MiniMessage.miniMessage().deserialize("<gray>sʟᴏᴛ: "+amount));
             itemStack.setItemMeta(meta);
             event.getClickedInventory().setItem(1, itemStack);
             player.updateInventory();
-
-            for (ShopItem item : categorie.getItems()) {
-                if(item.getInventorySlot()==(amount-1)){
-                    item.setInventorySlot(shopItem.getInventorySlot());
-                }
-            }
-            shopItem.setInventorySlot(amount-1);
-            categorie.save();
         }
         if(event.getRawSlot()==4){
             if(clickCooldown)return;
@@ -107,20 +117,20 @@ public class EditShopItem implements Listener {
             int amount = Integer.parseInt(itemname[1]);
             if(event.isLeftClick()){
                 if(event.isShiftClick()){
-                    amount+=10;
+                    amount=amount+10;
                 }else{
-                    amount+=1;
+                    amount=amount+1;
                 }
             }else if(event.isRightClick()){
                 if(event.isShiftClick()){
                     if(amount<10){
                         amount=0;
                     }else {
-                        amount-=10;
+                        amount=amount-10;
                     }
                 }else {
                     if(amount > 0){
-                        amount-=1;
+                        amount=amount-1;
                     }
                 }
             }
@@ -148,5 +158,14 @@ public class EditShopItem implements Listener {
             player.openInventory(new GUIManager().editCategorie(categorie));
         }
     }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if(event.getInventory().equals(inventory)){
+            this.inventory = null;
+            this.player = null;
+        }
+    }
+
 
 }

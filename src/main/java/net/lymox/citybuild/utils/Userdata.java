@@ -5,12 +5,15 @@ import net.lymox.citybuild.utils.userdata.Crate;
 import net.lymox.citybuild.utils.userdata.skills.Monsterjäger;
 import net.lymox.citybuild.utils.userdata.skills.enums.SkillType;
 import net.lymox.citybuild.utils.userdata.skills.interfaces.Skill;
+import net.lymox.citybuild.utils.userdata.storage.Storage;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Userdata {
@@ -114,7 +117,7 @@ public class Userdata {
     public void removeCrate(int id, int amount){
         Crate crate = getCrate(id);
         if(crate!=null){
-            if(crate.getAmount()<amount){
+            if(crate.getAmount()<=amount){
                 configuration.set("crate."+crate.getId(), null);
             }else {
                 configuration.set("crate." + crate.getId() + ".amount", crate.getAmount() - amount);
@@ -152,6 +155,84 @@ public class Userdata {
             configuration.set("skills.monster.kills", monsterjäger.getKills());
             save();
         }
+    }
+
+    public List<Storage> getStorages(){
+        if(!configuration.contains("storage")){
+            configuration.set("storage.1.bought", true);
+            configuration.set("storage.1.contents", null);
+            configuration.set("storage.2.bought", false);
+            configuration.set("storage.2.contents", null);
+            configuration.set("storage.3.bought", false);
+            configuration.set("storage.3.contents", null);
+            configuration.set("storage.4.bought", false);
+            configuration.set("storage.4.contents", null);
+            configuration.set("storage.5.bought", false);
+            configuration.set("storage.5.contents", null);
+            configuration.set("storage.6.bought", false);
+            configuration.set("storage.6.contents", null);
+            configuration.set("storage.7.bought", false);
+            configuration.set("storage.7.contents", null);
+            configuration.set("storage.8.bought", false);
+            configuration.set("storage.8.contents", null);
+            configuration.set("storage.9.bought", false);
+            configuration.set("storage.9.contents", null);
+            save();
+        }
+        List<Storage> storages = new ArrayList<>();
+        for (String storage : configuration.getConfigurationSection("storage").getKeys(false)) {
+            int id = Integer.parseInt(storage);
+            boolean bought = configuration.getBoolean("storage."+id+".bought");
+            ItemStack[] contents = null;
+            if(configuration.contains("storage."+id+".contents")) {
+                List<?> items = configuration.getList("storage." + id + ".contents");
+                if (items != null) {
+                    contents = new ItemStack[items.size()];
+                    for (int i = 0; i < items.size(); i++) {
+                        Object obj = items.get(i);
+                        if (obj instanceof Map) {
+                            contents[i] = ItemStack.deserialize((Map<String, Object>) obj);
+                        } else {
+                            contents[i] = null;
+                        }
+                    }
+                }
+            }
+            Storage result = new Storage(id, bought, contents);
+            storages.add(result);
+        }
+        return storages;
+    }
+
+    public Storage getStorage(int id){
+        for (Storage storage : getStorages()) {
+            if(storage.getId()==id){
+                return storage;
+            }
+        }
+        return null;
+    }
+    
+    public void saveStorages(){
+        for (Storage storage : getStorages()) {
+            List<Map<String, Object>> items = new ArrayList<>();
+            for (ItemStack item : storage.getContents()) {
+                items.add(item == null ? null : item.serialize());
+            }
+            configuration.set("storage."+storage.getId()+".contents", items);
+            configuration.set("storage."+storage.getId()+".bought", storage.isBought());
+        }
+        save();
+    }
+
+    public void saveStorage(Storage storage){
+        List<Map<String, Object>> items = new ArrayList<>();
+        for (ItemStack item : storage.getContents()) {
+            items.add(item == null ? null : item.serialize());
+        }
+        configuration.set("storage."+storage.getId()+".contents", items);
+        configuration.set("storage."+storage.getId()+".bought", storage.isBought());
+        save();
     }
 
     private void save(){

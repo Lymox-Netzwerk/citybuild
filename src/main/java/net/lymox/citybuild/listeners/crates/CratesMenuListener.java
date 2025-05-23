@@ -7,6 +7,7 @@ import net.lymox.citybuild.manager.GUIManager;
 import net.lymox.citybuild.manager.objects.crates.Crate;
 import net.lymox.citybuild.manager.objects.crates.CrateOpener;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
+import net.lymox.citybuild.utils.Userdata;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -47,7 +48,10 @@ public class CratesMenuListener implements Listener {
                         if (event.isRightClick()) {
                             player.openInventory(new GUIManager().crateInhalt(crate));
                         }else if(event.isLeftClick()){
-                            new CrateOpener(crate, player);
+                            net.lymox.citybuild.utils.userdata.Crate userCrate = new Userdata(player.getUniqueId()).getCrate(crate.getId());
+                            if(userCrate!=null&&userCrate.getAmount()>0) {
+                                new CrateOpener(crate, player);
+                            }
                         }
                     }
                 }
