@@ -8,14 +8,17 @@ import net.lymox.citybuild.listeners.crates.CratesClickListener;
 import net.lymox.citybuild.listeners.crates.CratesMenuListener;
 import net.lymox.citybuild.listeners.crates.CratesInventoryListener;
 import net.lymox.citybuild.listeners.elytra.ElytraListener;
+import net.lymox.citybuild.listeners.entitys.EntityDamageListener;
 import net.lymox.citybuild.listeners.entitys.EntityDeathListener;
 import net.lymox.citybuild.listeners.npc.shop.ShopPreventDeathListener;
 import net.lymox.citybuild.listeners.shop.ShopClickListener;
 import net.lymox.citybuild.listeners.shop.ShopEditClickListener;
+import net.lymox.citybuild.listeners.skills.SkillsClickListener;
 import net.lymox.citybuild.listeners.storage.StorageClickListener;
 import net.lymox.citybuild.listeners.world.WorldBreakListener;
 import net.lymox.citybuild.listeners.world.WorldMobSpawnListener;
 import net.lymox.citybuild.manager.Managers;
+import net.lymox.citybuild.tasks.RepeatingTasks;
 import net.lymox.citybuild.utils.ClearLag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -53,6 +56,9 @@ public class CitybuildPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerPortalListener(), this);
         Bukkit.getPluginManager().registerEvents(new StorageClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new EntityDamageListener(), this);
+        Bukkit.getPluginManager().registerEvents(new SkillsClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteractEvent(), this);
 
         new ElytraListener();
 
@@ -73,13 +79,10 @@ public class CitybuildPlugin extends JavaPlugin {
         getCommand("settings").setExecutor(new SettingsCommand());
         getCommand("settings").setTabCompleter(new SettingsCommand());
         getCommand("storage").setExecutor(new StorageCommand());
+        getCommand("startend").setExecutor(new startend());
+        getCommand("skills").setExecutor(new SkillsCommand());
 
-//        Location farmwelt = getManagers().getLocationsManager().get("Warp.Farmwelt");
-//        if(farmwelt != null){
-//            if(chunky.version()==0){
-//                chunky.startTask(farmwelt.getWorld().getName(), "square", farmwelt.getBlockX(), farmwelt.getBlockZ(), 5000, 5000, "concentric");
-//            }
-//        }
+        new RepeatingTasks();
     }
 
     @Override

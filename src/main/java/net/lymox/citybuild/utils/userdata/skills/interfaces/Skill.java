@@ -6,5 +6,9 @@ public interface Skill {
     int getExp();
     void setExp(int value);
     void addExp(int value);
+    int getLevel();
+    int requiredExp(int level);
+    int münzenReward(int level);
+    int additionalHearts(int level);
 
 }

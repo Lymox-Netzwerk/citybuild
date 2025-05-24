@@ -46,6 +46,10 @@ public class SetWarpCommand implements CommandExecutor {
                 return true;
             }
             String warpName = args[0];
+            if(warpName.equalsIgnoreCase("end")){
+                player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<red>Dieser Name ist gesperrt")));
+                return true;
+            }
             if(locationsManager.get("Warp."+warpName)!=null){
                 confim.remove(player);
                 confim.put(player, warpName);

@@ -1,8 +1,11 @@
 package net.lymox.citybuild.listeners.world;
 
+import dev.lone.itemsadder.api.Events.FurnitureBreakEvent;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,10 +14,15 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WorldBreakListener implements Listener {
     Location farmwelt = CitybuildPlugin.getInstance().getManagers().getLocationsManager().get("Warp.Farmwelt");
     Location spawn = CitybuildPlugin.getInstance().getManagers().getLocationsManager().get("Warp.Spawn");
     Location nether = CitybuildPlugin.getInstance().getManagers().getLocationsManager().get("Warp.Nether");
+    Location end = CitybuildPlugin.getInstance().getManagers().getLocationsManager().get("Warp.End");
+    private List<Block> placed = new ArrayList<>();
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
@@ -42,7 +50,49 @@ public class WorldBreakListener implements Listener {
                 }
             }
         }
+
+        if(end != null){
+            if(end.getWorld().equals(player.getWorld())){
+                if(player.hasPermission("lymox.citybuild.farmwelt.spawnprotection.bypass")&&player.getGameMode().equals(GameMode.CREATIVE))return;
+                if(event.getBlock().getType().equals(Material.BEACON)&&!placed.contains(event.getBlock())){
+                    event.setCancelled(true);
+                }
+                if(end.distance(player.getLocation())<=10) {
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
+
+    @EventHandler
+    public void onFurnitureBreak(FurnitureBreakEvent event) {
+        Player player = event.getPlayer();
+
+
+        if(farmwelt != null){
+            if(isInSpawnRadius(player.getLocation(), farmwelt)){
+                if(player.hasPermission("lymox.citybuild.farmwelt.spawnprotection.bypass")&&player.getGameMode().equals(GameMode.CREATIVE))return;
+                event.setCancelled(true);
+            }
+        }
+
+        if(nether != null){
+            if(isInSpawnRadius(player.getLocation(), nether)){
+                if(player.hasPermission("lymox.citybuild.farmwelt.spawnprotection.bypass")&&player.getGameMode().equals(GameMode.CREATIVE))return;
+                event.setCancelled(true);
+            }
+        }
+
+        if(spawn != null){
+            if(spawn.getWorld().equals(player.getWorld())){
+                if(spawn.distance(player.getLocation())<=85){
+                    if(player.hasPermission("lymox.citybuild.farmwelt.spawnprotection.bypass")&&player.getGameMode().equals(GameMode.CREATIVE))return;
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
@@ -66,6 +116,18 @@ public class WorldBreakListener implements Listener {
                 if(spawn.distance(player.getLocation())<=85){
                     if(player.hasPermission("lymox.citybuild.farmwelt.spawnprotection.bypass")&&player.getGameMode().equals(GameMode.CREATIVE))return;
                     event.setCancelled(true);
+                }
+            }
+        }
+        if(end != null){
+            if(end.getWorld().equals(player.getWorld())){
+                if(player.hasPermission("lymox.citybuild.farmwelt.spawnprotection.bypass")&&player.getGameMode().equals(GameMode.CREATIVE))return;
+                if(end.distance(player.getLocation())<=10) {
+                    event.setCancelled(true);
+                    return;
+                }
+                if(event.getBlock().getType().equals(Material.BEACON)){
+                    placed.add(event.getBlock());
                 }
             }
         }

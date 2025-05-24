@@ -19,7 +19,9 @@ public class PlayerTeleportMoveListener implements Listener {
         List<Integer> inte = new ArrayList<>();
         WarpCommand.teleportReq.forEach((integer, target) -> {
             if(target.equals(player)){
-                if(event.getFrom().getX()!=event.getTo().getX() || event.getFrom().getZ()!=event.getTo().getZ()){
+                if (event.getFrom().getX() != event.getTo().getX()
+                        || event.getFrom().getY() != event.getTo().getY()
+                        || event.getFrom().getZ() != event.getTo().getZ()) {
                     inte.add(integer);
                     player.sendMessage(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Die Teleportation wurde Aufgrund einer Bewegung unterbrochen")));
                 }

@@ -150,6 +150,7 @@ public class ElytraListener extends BukkitRunnable implements Listener {
     @EventHandler
     public void onToggleGlide(EntityToggleGlideEvent event) {
         if (event.getEntityType() == EntityType.PLAYER && flying.contains(event.getEntity())) {
+            if(((Player)event.getEntity()).getGameMode().equals(GameMode.CREATIVE))return;
             event.setCancelled(true);
         }
     }

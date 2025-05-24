@@ -3,6 +3,7 @@ package net.lymox.citybuild.manager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPermsProvider;
+import net.lymox.citybuild.commands.SkillsCommand;
 import net.lymox.citybuild.listeners.storage.StorageClickListener;
 import net.lymox.citybuild.manager.objects.crates.Crate;
 import net.lymox.citybuild.manager.objects.shop.Categorie;
@@ -10,6 +11,9 @@ import net.lymox.citybuild.manager.objects.shop.ShopItem;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.ItemCreator;
 import net.lymox.citybuild.utils.Userdata;
+import net.lymox.citybuild.utils.userdata.skills.Monsterjäger;
+import net.lymox.citybuild.utils.userdata.skills.enums.SkillType;
+import net.lymox.citybuild.utils.userdata.skills.interfaces.Skill;
 import net.lymox.citybuild.utils.userdata.storage.Storage;
 import net.lymox.core.master.manager.PermissionManager;
 import org.bukkit.Bukkit;
@@ -297,13 +301,13 @@ public class GUIManager {
             int i = 1;
             for (Storage storage : userdata.getStorages()) {
                 ItemStack itemStack = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-                if(storage.isBought()){
+                if(storage.isBought()|| StorageClickListener.hasStorage(uuid, i)){
                     itemStack = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
                 }
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.displayName(MiniMessage.miniMessage().deserialize(i +". sᴛᴏʀᴀɢᴇ"));
                 List<Component> lore = new ArrayList<>();
-                if(storage.isBought()|| StorageClickListener.hasStoragePermission(uuid, i)){
+                if(storage.isBought()|| StorageClickListener.hasStorage(uuid, i)){
                     lore.add(MiniMessage.miniMessage().deserialize("<green>Freigeschaltet"));
                 }else {
                     boolean canBeBought = false;
@@ -330,6 +334,76 @@ public class GUIManager {
         return null;
     }
 
+    public Inventory openSkills(UUID uuid, SkillType skill){
+        Userdata userdata = new Userdata(uuid);
+        if(skill==null){
+            Inventory inventory = Bukkit.createInventory(null, 9, "§a§lsᴋɪʟʟs");
 
+            if(userdata.getSkill(SkillType.MONSTERJÄGER)!=null){
+                Monsterjäger monsterjäger = (Monsterjäger) userdata.getSkill(SkillType.MONSTERJÄGER);
+
+                int newLevel = monsterjäger.getLevel()+1;
+
+                int exp = monsterjäger.getExp() - monsterjäger.requiredExp(newLevel-1);
+                int newexp = monsterjäger.requiredExp((newLevel)) - monsterjäger.requiredExp(newLevel-1);
+
+                double fortschrittProzent = ((double) exp / newexp) * 100;
+
+                List<Component> lore = new ArrayList<>();
+
+                if(monsterjäger.getLevel()==10){
+                    lore.add(MiniMessage.miniMessage().deserialize("<white>ғᴏʀᴛsᴄʜʀɪᴛᴛ ғüʀ ʟᴇᴠᴇʟ " + 10 + ": <yellow>100%"));
+                    lore.add(MiniMessage.miniMessage().deserialize(SkillsCommand.getBalken(100) + " <yellow>" + monsterjäger.requiredExp(10) + "<gold>/<yellow>" + monsterjäger.requiredExp(10)));
+                    lore.add(Component.empty());
+                    lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ ғüʀ ʟᴇᴠᴇʟ " + 10));
+                    lore.addAll(monsterjäger.rewards(10, true));
+                }else {
+                    lore.add(MiniMessage.miniMessage().deserialize("<white>ғᴏʀᴛsᴄʜʀɪᴛᴛ ғüʀ ʟᴇᴠᴇʟ " + newLevel + ": <yellow>" + Math.round(fortschrittProzent) + "%"));
+                    lore.add(MiniMessage.miniMessage().deserialize(SkillsCommand.getBalken(Math.round(fortschrittProzent)) + " <yellow>" + monsterjäger.getExp() + "<gold>/<yellow>" + monsterjäger.requiredExp(newLevel)));
+                    lore.add(Component.empty());
+                    lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ ғüʀ ʟᴇᴠᴇʟ " + newLevel));
+                    lore.addAll(monsterjäger.rewards(newLevel, false));
+                }
+
+                inventory.setItem(0, new ItemCreator(Material.CREEPER_HEAD).
+                        displayName(MiniMessage.miniMessage().deserialize("<color:#54c571>Monsterjäger</color>"))
+                        .lore(lore)
+                        .build());
+            }
+
+            return inventory;
+        }else if(skill==SkillType.MONSTERJÄGER){
+            Monsterjäger monsterjäger = (Monsterjäger) userdata.getSkill(SkillType.MONSTERJÄGER);
+            Inventory inventory = Bukkit.createInventory(null, 9*3, "§a§lsᴋɪʟʟs §8● §2ᴍᴏɴsᴛᴇʀᴊäɢᴇʀ");
+
+            for(int i = 0; i<inventory.getSize(); i++){
+                inventory.setItem(i, new ItemCreator(Material.BLACK_STAINED_GLASS_PANE).displayName(Component.empty()).build());
+            }
+
+            for(int i = 0; i<=9; i++){
+                int level = i+1;
+                ItemStack itemStack = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                String color = "<red>";
+                if(monsterjäger.getLevel()==level){
+                    itemStack.setType(Material.ORANGE_STAINED_GLASS_PANE);
+                    color = "<gold>";
+                }else if(monsterjäger.getLevel()>level){
+                    itemStack.setType(Material.LIME_STAINED_GLASS_PANE);
+                    color = "<green>";
+                }
+                itemMeta.displayName(MiniMessage.miniMessage().deserialize(color+"ᴍᴏɴsᴛᴇʀᴊäɢᴇʀ " + level));
+                List<Component> lore = new ArrayList<>();
+                lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ"));
+                lore.addAll(monsterjäger.rewards(level, monsterjäger.getLevel()>level));
+                itemMeta.lore(lore);
+                itemStack.setItemMeta(itemMeta);
+
+                inventory.setItem(SkillsCommand.slot(level), itemStack);
+            }
+            return inventory;
+        }
+        return null;
+    }
 
 }
