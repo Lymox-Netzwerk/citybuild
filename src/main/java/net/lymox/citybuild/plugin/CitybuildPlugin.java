@@ -15,13 +15,13 @@ import net.lymox.citybuild.listeners.shop.ShopClickListener;
 import net.lymox.citybuild.listeners.shop.ShopEditClickListener;
 import net.lymox.citybuild.listeners.skills.SkillsClickListener;
 import net.lymox.citybuild.listeners.storage.StorageClickListener;
+import net.lymox.citybuild.listeners.world.BlockDropItemListener;
 import net.lymox.citybuild.listeners.world.WorldBreakListener;
 import net.lymox.citybuild.listeners.world.WorldMobSpawnListener;
 import net.lymox.citybuild.manager.Managers;
 import net.lymox.citybuild.tasks.RepeatingTasks;
 import net.lymox.citybuild.utils.ClearLag;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.popcraft.chunky.api.ChunkyAPI;
 
@@ -59,6 +59,8 @@ public class CitybuildPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EntityDamageListener(), this);
         Bukkit.getPluginManager().registerEvents(new SkillsClickListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerEarnsExpListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BlockDropItemListener(), this);
 
         new ElytraListener();
 
@@ -79,8 +81,9 @@ public class CitybuildPlugin extends JavaPlugin {
         getCommand("settings").setExecutor(new SettingsCommand());
         getCommand("settings").setTabCompleter(new SettingsCommand());
         getCommand("storage").setExecutor(new StorageCommand());
-        getCommand("startend").setExecutor(new startend());
+        getCommand("startend").setExecutor(new StartendCommand());
         getCommand("skills").setExecutor(new SkillsCommand());
+        getCommand("clearlag").setExecutor(new ClearlagCommand());
 
         new RepeatingTasks();
     }
@@ -103,5 +106,9 @@ public class CitybuildPlugin extends JavaPlugin {
 
     public ChunkyAPI getChunky() {
         return chunky;
+    }
+
+    public ClearLag getClearLag() {
+        return clearLag;
     }
 }

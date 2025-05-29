@@ -50,13 +50,16 @@ public class ClearLag {
     }
 
     public void forceClearLag(){
+        int amount = 0;
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if(entity instanceof Item){
                     entity.remove();
+                    amount++;
                 }
             }
         }
+        Bukkit.broadcast(CitybuildPlugin.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Es wurden <b>" + amount + " Gegenstände</b> entfernt")));
     }
 
 }

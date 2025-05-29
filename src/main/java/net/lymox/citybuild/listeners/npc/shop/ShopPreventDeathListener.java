@@ -1,6 +1,7 @@
 package net.lymox.citybuild.listeners.npc.shop;
 
 import com.sun.jdi.Locatable;
+import de.oliver.fancynpcs.api.events.NpcInteractEvent;
 import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobInteractEvent;
@@ -30,23 +31,8 @@ public class ShopPreventDeathListener implements Listener {
     private final int maxRadius = 5000; // z.B. 5000 Block-Radius
 
     @EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
-        if(MythicBukkit.inst().getMobManager().isMythicMob(event.getEntity())){
-            ActiveMob mythicMob = MythicBukkit.inst().getMobManager().getMythicMobInstance(event.getEntity());
-            System.out.println(mythicMob.getMobType());
-            if(mythicMob.getMobType().equalsIgnoreCase("fantasy_npc_banker")){
-                event.setCancelled(true);
-            }
-            if(mythicMob.getMobType().equalsIgnoreCase("fantasy_npc_knight")){
-                event.setCancelled(true);
-            }
-        }
-
-    }
-
-    @EventHandler
-    public void onMythicMobInteract(MythicMobInteractEvent event) {
-        if(event.getActiveMob().getMobType().equalsIgnoreCase("fantasy_npc_banker")){
+    public void onNpcInteract(NpcInteractEvent event) {
+        if(event.getNpc().getData().getName().equalsIgnoreCase("Shop")){
             Player player = event.getPlayer();
             Categorie categorie = CitybuildPlugin.getInstance().getManagers().getShopManager().getCategories().getFirst();
             if(categorie==null){
@@ -56,7 +42,7 @@ public class ShopPreventDeathListener implements Listener {
             Inventory shop = new GUIManager().openShop(categorie, false);
             player.openInventory(shop);
         }
-        if(event.getActiveMob().getMobType().equalsIgnoreCase("fantasy_npc_knight")){
+        if(event.getNpc().getData().getName().equalsIgnoreCase("RandomTPFarmwelt")){
             Player player = event.getPlayer();
             Location farmwelt = CitybuildPlugin.getInstance().getManagers().getLocationsManager().get("Warp.Farmwelt");
 
@@ -74,6 +60,7 @@ public class ShopPreventDeathListener implements Listener {
             }
         }
     }
+
 
     private Location getRandomSurfaceLocation(World world, int radius) {
         for (int i = 0; i < 20; i++) { // Versuche bis zu 20 zufällige Positionen

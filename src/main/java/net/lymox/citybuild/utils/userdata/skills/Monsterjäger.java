@@ -25,6 +25,16 @@ public class Monsterjäger implements Skill {
     }
 
     @Override
+    public String getNameFormatted() {
+        return "ᴍᴏɴsᴛᴇʀᴊäɢᴇʀ";
+    }
+
+    @Override
+    public String getColor() {
+        return "§2";
+    }
+
+    @Override
     public int getExp() {
         return this.xp;
     }
@@ -237,6 +247,11 @@ public class Monsterjäger implements Skill {
     }
 
     @Override
+    public double additionalSpeed(int level) {
+        return 0;
+    }
+
+    @Override
     public int münzenReward(int level) {
         return switch (level) {
             case 2 -> 200;
@@ -250,5 +265,10 @@ public class Monsterjäger implements Skill {
             case 10 -> 4000;
             default -> 0;
         };
+    }
+
+    @Override
+    public double additionalExpRate(int level) {
+        return 0;
     }
 }

@@ -11,11 +11,15 @@ import net.lymox.citybuild.manager.objects.shop.ShopItem;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.ItemCreator;
 import net.lymox.citybuild.utils.Userdata;
+import net.lymox.citybuild.utils.userdata.skills.Holzfäller;
+import net.lymox.citybuild.utils.userdata.skills.Jäger;
+import net.lymox.citybuild.utils.userdata.skills.Miner;
 import net.lymox.citybuild.utils.userdata.skills.Monsterjäger;
 import net.lymox.citybuild.utils.userdata.skills.enums.SkillType;
 import net.lymox.citybuild.utils.userdata.skills.interfaces.Skill;
 import net.lymox.citybuild.utils.userdata.storage.Storage;
 import net.lymox.core.master.manager.PermissionManager;
+import net.royawesome.jlibnoise.module.combiner.Min;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -334,9 +338,9 @@ public class GUIManager {
         return null;
     }
 
-    public Inventory openSkills(UUID uuid, SkillType skill){
+    public Inventory openSkills(UUID uuid, SkillType skillType){
         Userdata userdata = new Userdata(uuid);
-        if(skill==null){
+        if(skillType==null){
             Inventory inventory = Bukkit.createInventory(null, 9, "§a§lsᴋɪʟʟs");
 
             if(userdata.getSkill(SkillType.MONSTERJÄGER)!=null){
@@ -371,10 +375,106 @@ public class GUIManager {
                         .build());
             }
 
+            if(userdata.getSkill(SkillType.JÄGER)!=null){
+                Jäger jäger = (Jäger) userdata.getSkill(SkillType.JÄGER);
+
+                int newLevel = jäger.getLevel()+1;
+
+                int exp = jäger.getExp() - jäger.requiredExp(newLevel-1);
+                int newexp = jäger.requiredExp((newLevel)) - jäger.requiredExp(newLevel-1);
+
+                double fortschrittProzent = ((double) exp / newexp) * 100;
+
+                List<Component> lore = new ArrayList<>();
+
+                if(jäger.getLevel()==10){
+                    lore.add(MiniMessage.miniMessage().deserialize("<white>ғᴏʀᴛsᴄʜʀɪᴛᴛ ғüʀ ʟᴇᴠᴇʟ " + 10 + ": <yellow>100%"));
+                    lore.add(MiniMessage.miniMessage().deserialize(SkillsCommand.getBalken(100) + " <yellow>" + jäger.requiredExp(10) + "<gold>/<yellow>" + jäger.requiredExp(10)));
+                    lore.add(Component.empty());
+                    lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ ғüʀ ʟᴇᴠᴇʟ " + 10));
+                    lore.addAll(jäger.rewards(10, true));
+                }else {
+                    lore.add(MiniMessage.miniMessage().deserialize("<white>ғᴏʀᴛsᴄʜʀɪᴛᴛ ғüʀ ʟᴇᴠᴇʟ " + newLevel + ": <yellow>" + Math.round(fortschrittProzent) + "%"));
+                    lore.add(MiniMessage.miniMessage().deserialize(SkillsCommand.getBalken(Math.round(fortschrittProzent)) + " <yellow>" + jäger.getExp() + "<gold>/<yellow>" + jäger.requiredExp(newLevel)));
+                    lore.add(Component.empty());
+                    lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ ғüʀ ʟᴇᴠᴇʟ " + newLevel));
+                    lore.addAll(jäger.rewards(newLevel, false));
+                }
+
+                inventory.setItem(1, new ItemCreator(Material.STONE_SWORD).
+                        displayName(MiniMessage.miniMessage().deserialize("<green>Jäger</green>"))
+                        .lore(lore)
+                        .build());
+            }
+
+            if(userdata.getSkill(SkillType.MINER)!=null){
+                Miner miner = (Miner) userdata.getSkill(SkillType.MINER);
+
+                int newLevel = miner.getLevel()+1;
+
+                int exp = miner.getExp() - miner.requiredExp(newLevel-1);
+                int newexp = miner.requiredExp((newLevel)) - miner.requiredExp(newLevel-1);
+
+                double fortschrittProzent = ((double) exp / newexp) * 100;
+
+                List<Component> lore = new ArrayList<>();
+
+                if(miner.getLevel()==10){
+                    lore.add(MiniMessage.miniMessage().deserialize("<white>ғᴏʀᴛsᴄʜʀɪᴛᴛ ғüʀ ʟᴇᴠᴇʟ " + 10 + ": <yellow>100%"));
+                    lore.add(MiniMessage.miniMessage().deserialize(SkillsCommand.getBalken(100) + " <yellow>" + miner.requiredExp(10) + "<gold>/<yellow>" + miner.requiredExp(10)));
+                    lore.add(Component.empty());
+                    lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ ғüʀ ʟᴇᴠᴇʟ " + 10));
+                    lore.addAll(miner.rewards(10, true));
+                }else {
+                    lore.add(MiniMessage.miniMessage().deserialize("<white>ғᴏʀᴛsᴄʜʀɪᴛᴛ ғüʀ ʟᴇᴠᴇʟ " + newLevel + ": <yellow>" + Math.round(fortschrittProzent) + "%"));
+                    lore.add(MiniMessage.miniMessage().deserialize(SkillsCommand.getBalken(Math.round(fortschrittProzent)) + " <yellow>" + miner.getExp() + "<gold>/<yellow>" + miner.requiredExp(newLevel)));
+                    lore.add(Component.empty());
+                    lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ ғüʀ ʟᴇᴠᴇʟ " + newLevel));
+                    lore.addAll(miner.rewards(newLevel, false));
+                }
+
+                inventory.setItem(2, new ItemCreator(Material.STONE_PICKAXE).
+                        displayName(MiniMessage.miniMessage().deserialize("<color:#9e9e35>Minenarbeiter</color>"))
+                        .lore(lore)
+                        .build());
+            }
+
+            if(userdata.getSkill(SkillType.HOLZFÄLLER)!=null){
+                Holzfäller holzfäller = (Holzfäller) userdata.getSkill(SkillType.HOLZFÄLLER);
+
+                int newLevel = holzfäller.getLevel()+1;
+
+                int exp = holzfäller.getExp() - holzfäller.requiredExp(newLevel-1);
+                int newexp = holzfäller.requiredExp((newLevel)) - holzfäller.requiredExp(newLevel-1);
+
+                double fortschrittProzent = ((double) exp / newexp) * 100;
+
+                List<Component> lore = new ArrayList<>();
+
+                if(holzfäller.getLevel()==10){
+                    lore.add(MiniMessage.miniMessage().deserialize("<white>ғᴏʀᴛsᴄʜʀɪᴛᴛ ғüʀ ʟᴇᴠᴇʟ " + 10 + ": <yellow>100%"));
+                    lore.add(MiniMessage.miniMessage().deserialize(SkillsCommand.getBalken(100) + " <yellow>" + holzfäller.requiredExp(10) + "<gold>/<yellow>" + holzfäller.requiredExp(10)));
+                    lore.add(Component.empty());
+                    lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ ғüʀ ʟᴇᴠᴇʟ " + 10));
+                    lore.addAll(holzfäller.rewards(10, true));
+                }else {
+                    lore.add(MiniMessage.miniMessage().deserialize("<white>ғᴏʀᴛsᴄʜʀɪᴛᴛ ғüʀ ʟᴇᴠᴇʟ " + newLevel + ": <yellow>" + Math.round(fortschrittProzent) + "%"));
+                    lore.add(MiniMessage.miniMessage().deserialize(SkillsCommand.getBalken(Math.round(fortschrittProzent)) + " <yellow>" + holzfäller.getExp() + "<gold>/<yellow>" + holzfäller.requiredExp(newLevel)));
+                    lore.add(Component.empty());
+                    lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ ғüʀ ʟᴇᴠᴇʟ " + newLevel));
+                    lore.addAll(holzfäller.rewards(newLevel, false));
+                }
+
+                inventory.setItem(3, new ItemCreator(Material.STONE_AXE).
+                        displayName(MiniMessage.miniMessage().deserialize("<color:#cf5c00>Holzfäller</color>"))
+                        .lore(lore)
+                        .build());
+            }
+
             return inventory;
-        }else if(skill==SkillType.MONSTERJÄGER){
-            Monsterjäger monsterjäger = (Monsterjäger) userdata.getSkill(SkillType.MONSTERJÄGER);
-            Inventory inventory = Bukkit.createInventory(null, 9*3, "§a§lsᴋɪʟʟs §8● §2ᴍᴏɴsᴛᴇʀᴊäɢᴇʀ");
+        }else {
+            Skill skill =  userdata.getSkill(skillType);
+            Inventory inventory = Bukkit.createInventory(null, 9*3, "§a§lsᴋɪʟʟs §8● " + skill.getColor() + skill.getName());
 
             for(int i = 0; i<inventory.getSize(); i++){
                 inventory.setItem(i, new ItemCreator(Material.BLACK_STAINED_GLASS_PANE).displayName(Component.empty()).build());
@@ -385,17 +485,17 @@ public class GUIManager {
                 ItemStack itemStack = new ItemStack(Material.RED_STAINED_GLASS_PANE);
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 String color = "<red>";
-                if(monsterjäger.getLevel()==level){
+                if(skill.getLevel()==level&&skill.getLevel()<10){
                     itemStack.setType(Material.ORANGE_STAINED_GLASS_PANE);
                     color = "<gold>";
-                }else if(monsterjäger.getLevel()>level){
+                }else if(skill.getLevel()>level || skill.getLevel()>=10){
                     itemStack.setType(Material.LIME_STAINED_GLASS_PANE);
                     color = "<green>";
                 }
-                itemMeta.displayName(MiniMessage.miniMessage().deserialize(color+"ᴍᴏɴsᴛᴇʀᴊäɢᴇʀ " + level));
+                itemMeta.displayName(MiniMessage.miniMessage().deserialize(color+skill.getNameFormatted()+" " + level));
                 List<Component> lore = new ArrayList<>();
                 lore.add(MiniMessage.miniMessage().deserialize("<gray>ʙᴇʟᴏʜɴᴜɴɢᴇɴ"));
-                lore.addAll(monsterjäger.rewards(level, monsterjäger.getLevel()>level));
+                lore.addAll(skill.rewards(level, skill.getLevel() == 10 || skill.getLevel() > level));
                 itemMeta.lore(lore);
                 itemStack.setItemMeta(itemMeta);
 
@@ -403,7 +503,6 @@ public class GUIManager {
             }
             return inventory;
         }
-        return null;
     }
 
 }

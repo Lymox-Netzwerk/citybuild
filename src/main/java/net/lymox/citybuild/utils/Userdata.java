@@ -2,6 +2,9 @@ package net.lymox.citybuild.utils;
 
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.userdata.Crate;
+import net.lymox.citybuild.utils.userdata.skills.Holzfäller;
+import net.lymox.citybuild.utils.userdata.skills.Jäger;
+import net.lymox.citybuild.utils.userdata.skills.Miner;
 import net.lymox.citybuild.utils.userdata.skills.Monsterjäger;
 import net.lymox.citybuild.utils.userdata.skills.enums.SkillType;
 import net.lymox.citybuild.utils.userdata.skills.interfaces.Skill;
@@ -146,6 +149,36 @@ public class Userdata {
             int kills = configuration.getInt("skills.monster.kills");
             return new Monsterjäger(kills, xp);
         }
+        if(skillType.equals(SkillType.JÄGER)){
+            if(!configuration.contains("skills.jager")){
+                configuration.set("skills.jager.xp", 0);
+                configuration.set("skills.jager.kills", 0);
+                save();
+            }
+            int xp = configuration.getInt("skills.jager.xp");
+            int kills = configuration.getInt("skills.jager.kills");
+            return new Jäger(kills, xp);
+        }
+        if(skillType.equals(SkillType.MINER)){
+            if(!configuration.contains("skills.miner")){
+                configuration.set("skills.miner.xp", 0);
+                configuration.set("skills.miner.blocks", 0);
+                save();
+            }
+            int xp = configuration.getInt("skills.miner.xp");
+            int kills = configuration.getInt("skills.miner.blocks");
+            return new Miner(kills, xp);
+        }
+        if(skillType.equals(SkillType.HOLZFÄLLER)){
+            if(!configuration.contains("skills.wooder")){
+                configuration.set("skills.wooder.xp", 0);
+                configuration.set("skills.wooder.blocks", 0);
+                save();
+            }
+            int xp = configuration.getInt("skills.wooder.xp");
+            int kills = configuration.getInt("skills.wooder.blocks");
+            return new Holzfäller(kills, xp);
+        }
         return null;
     }
 
@@ -153,6 +186,21 @@ public class Userdata {
         if(skill instanceof Monsterjäger monsterjäger){
             configuration.set("skills.monster.xp", monsterjäger.getExp());
             configuration.set("skills.monster.kills", monsterjäger.getKills());
+            save();
+        }
+        if(skill instanceof Jäger jäger){
+            configuration.set("skills.jager.xp", jäger.getExp());
+            configuration.set("skills.jager.kills", jäger.getKills());
+            save();
+        }
+        if(skill instanceof Miner miner){
+            configuration.set("skills.miner.xp", miner.getExp());
+            configuration.set("skills.miner.blocks", miner.getBlocks());
+            save();
+        }
+        if(skill instanceof Holzfäller holzfäller){
+            configuration.set("skills.wooder.xp", holzfäller.getExp());
+            configuration.set("skills.wooder.blocks", holzfäller.getBlocks());
             save();
         }
     }

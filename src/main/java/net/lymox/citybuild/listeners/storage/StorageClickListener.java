@@ -97,6 +97,9 @@ public class StorageClickListener implements Listener {
         if(userdata.getSkill(SkillType.MONSTERJÄGER).getLevel()>=5){
             additional++;
         }
+        if(userdata.getSkill(SkillType.JÄGER).getLevel()>=5){
+            additional++;
+        }
         if(opend.contains(storage)){
             return true;
         }else {

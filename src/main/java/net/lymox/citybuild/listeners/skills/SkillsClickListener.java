@@ -29,6 +29,15 @@ public class SkillsClickListener implements Listener {
             if(event.getRawSlot()==0){
                 player.openInventory(new GUIManager().openSkills(player.getUniqueId(), SkillType.MONSTERJÄGER));
             }
+            if(event.getRawSlot()==1){
+                player.openInventory(new GUIManager().openSkills(player.getUniqueId(), SkillType.JÄGER));
+            }
+            if(event.getRawSlot()==2){
+                player.openInventory(new GUIManager().openSkills(player.getUniqueId(), SkillType.MINER));
+            }
+            if(event.getRawSlot()==3){
+                player.openInventory(new GUIManager().openSkills(player.getUniqueId(), SkillType.HOLZFÄLLER));
+            }
         }
         if(title.equalsIgnoreCase("sᴋɪʟʟs ● ᴍᴏɴsᴛᴇʀᴊäɢᴇʀ")){
             event.setCancelled(true);

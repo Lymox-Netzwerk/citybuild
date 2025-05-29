@@ -5,6 +5,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.model.user.UserManager;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.Userdata;
+import net.lymox.citybuild.utils.userdata.skills.Holzfäller;
+import net.lymox.citybuild.utils.userdata.skills.Jäger;
 import net.lymox.citybuild.utils.userdata.skills.Monsterjäger;
 import net.lymox.citybuild.utils.userdata.skills.enums.SkillType;
 import net.lymox.citybuild.uuidfetcher.UUIDFetcher;
@@ -18,9 +20,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class EntityDeathListener implements Listener {
 
@@ -32,7 +34,6 @@ public class EntityDeathListener implements Listener {
         if(!(event.getEntity().getKiller() instanceof Player player))return;
         Userdata userdata = new Userdata(player.getUniqueId());
         Monsterjäger monsterjäger = (Monsterjäger) userdata.getSkill(SkillType.MONSTERJÄGER);
-
         if(monsterjäger.getLevel()<10) {
             if (monsterjäger.isValidMonster(event.getEntity().getType())) {
                 int drop = monsterjäger.dropsExp(event.getEntity());
@@ -59,7 +60,45 @@ public class EntityDeathListener implements Listener {
                 }
             }
         }
-        userdata.saveSkill(monsterjäger);
+        Jäger jäger = (Jäger) userdata.getSkill(SkillType.JÄGER);
+        if(jäger.getLevel()<10) {
+            if (jäger.isValidMonster(event.getEntity().getType())) {
+                int drop = jäger.dropsExp(event.getEntity());
+                int oldLevel = jäger.getLevel();
+                jäger.addExp(drop);
+                int newLevel = jäger.getLevel();
+                jäger.setKills(jäger.getKills() + 1);
+                player.sendActionBar("\uE07D §7"+jäger.getNameFormatted()+" §8- §a+" + drop + " XP §7[" + jäger.getExp() + "/" + (jäger.requiredExp(oldLevel) >= jäger.getExp() ? "" + jäger.requiredExp(oldLevel) : "" + jäger.requiredExp(oldLevel + 1)) + "]");
+                if (oldLevel != newLevel) {
+                    player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+                    player.sendMessage("§k-------------------------");
+                    player.sendMessage("   §a§lLEVEL AUFGESTIEGEN");
+                    player.sendMessage("§7 ");
+                    player.sendMessage("              \uE07D");
+                    player.sendMessage("§7 ");
+                    player.sendMessage("§8"+jäger.getNameFormatted()+" " + oldLevel + " §7› §a"+jäger.getNameFormatted()+" " + newLevel);
+                    player.sendMessage("§7 ");
+                    player.sendMessage("§7ʙᴇʟᴏʜɴᴜɴɢᴇɴ");
+                    for (Component reward : jäger.rewards(newLevel, false)) {
+                        player.sendMessage(reward);
+                    }
+                    player.sendMessage("§k-------------------------");
+                    userdata.setMünzen(userdata.getMünzen() + jäger.münzenReward(newLevel));
+                }
+            }
+        }
+        userdata.saveSkill(jäger);
+
+        Holzfäller holzfäller = (Holzfäller) userdata.getSkill(SkillType.HOLZFÄLLER);
+        int dropchance = holzfäller.doubleDropChance(holzfäller.getLevel());
+        int random = new Random().nextInt(0, 100);
+        if(dropchance>=random){
+            List<ItemStack> originalDrops = new ArrayList<>(event.getDrops());
+
+            for (ItemStack drop : originalDrops) {
+                event.getDrops().add(drop.clone());
+            }
+        }
     }
 
     @EventHandler

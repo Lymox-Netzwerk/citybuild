@@ -2,6 +2,8 @@ package net.lymox.citybuild.manager.objects.crates;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.luckperms.api.model.user.User;
 import net.lymox.citybuild.plugin.CitybuildPlugin;
 import net.lymox.citybuild.utils.ItemCreator;
 import net.lymox.citybuild.utils.Userdata;
@@ -14,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -219,7 +222,36 @@ public class CrateOpener implements Listener {
         if(zycl == 7){
             ItemStack itemStack = inventory.getItem(13);
             assert itemStack != null;
-            player.getInventory().addItem(itemStack);
+
+            if(itemStack.hasItemMeta()){
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                String displayName = PlainTextComponentSerializer.plainText().serialize(itemMeta.displayName());
+                String[] args = displayName.split(" ");
+                if(args.length == 2){
+                    if(args[1].equalsIgnoreCase("Münzen")){
+                        try {
+                            int münzen = Integer.parseInt(args[0]);
+                            if(münzen > 0){
+                                Userdata userdata = new Userdata(player.getUniqueId());
+                                userdata.setMünzen(userdata.getMünzen()+münzen);
+                            }else {
+                                player.getInventory().addItem(itemStack);
+                            }
+                        }catch (NumberFormatException e){
+                            player.getInventory().addItem(itemStack);
+                            e.printStackTrace();
+                        }
+                    }else {
+                        player.getInventory().addItem(itemStack);
+                    }
+                }else {
+                    player.getInventory().addItem(itemStack);
+
+                }
+            }else {
+                player.getInventory().addItem(itemStack);
+            }
+
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
             for (int i = 0; i <= 8; i++) {
                 if(i!=4)

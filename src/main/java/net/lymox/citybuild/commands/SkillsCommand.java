@@ -22,27 +22,21 @@ public class SkillsCommand implements CommandExecutor {
         return false;
     }
 
-    public static String getBalken(long percent){
-        if(percent < 10){
-            return "<gray>▌▌▌▌▌▌▌▌▌";
-        }else if(percent >= 10 && percent <= 20){
-            return "<green>▌<gray>▌▌▌▌▌▌▌▌";
-        }else if(percent >= 20 && percent < 30){
-            return "<green>▌▌<gray>▌▌▌▌▌▌▌";
-        }else if(percent >= 30 && percent < 40){
-            return "<green>▌▌▌<gray>▌▌▌▌▌▌";
-        }else if(percent >= 40 && percent < 50){
-            return "<green>▌▌▌▌<gray>▌▌▌▌▌";
-        }else if(percent >= 50 && percent < 60){
-            return "<green>▌▌▌▌▌<gray>▌▌▌▌";
-        }else if(percent >= 60 && percent < 70){
-            return "<green>▌▌▌▌▌▌<gray>▌▌▌";
-        }else if(percent >= 80 && percent < 90){
-            return "<green>▌▌▌▌▌▌▌<gray>▌▌";
-        }else if(percent >= 90 && percent < 100){
-            return "<green>▌▌▌▌▌▌▌▌<gray>▌";
+    public static String getBalken(long percent) {
+        int balkenLaenge = 20;
+        int gruenAnzahl = (int) Math.round(percent / 100.0 * balkenLaenge);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<green>");
+        for (int i = 0; i < gruenAnzahl; i++) {
+            sb.append("▌");
         }
-        return "<green>▌▌▌▌▌▌▌▌▌";
+        sb.append("<gray>");
+        for (int i = gruenAnzahl; i < balkenLaenge; i++) {
+            sb.append("▌");
+        }
+
+        return sb.toString();
     }
 
     public static int slot(int level){
